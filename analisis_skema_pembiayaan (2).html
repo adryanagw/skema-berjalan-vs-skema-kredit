@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analisis Skema Pembiayaan — C-Level Brief</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ink: #0f0f0f;
+    --ink-2: #3a3a3a;
+    --ink-3: #6b6b6b;
+    --line: #e0e0e0;
+    --bg: #ffffff;
+    --bg-2: #f7f7f5;
+    --purple: #3d2fa0;
+    --purple-light: #ede9ff;
+    --teal: #0b7a5e;
+    --teal-light: #e0f4ee;
+    --amber: #b85c00;
+    --amber-light: #fff4e0;
+    --red: #b22222;
+    --red-light: #fdf0f0;
+    --green: #1a6b35;
+    --green-light: #e8f5ed;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 40px;
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .doc-type {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .doc-date { font-size: 12px; color: var(--ink-3); }
+  .title { font-size: 28px; font-weight: 600; letter-spacing: -0.5px; line-height: 1.2; }
+  .subtitle { font-size: 14px; color: var(--ink-2); margin-top: 6px; }
+
+  /* Assumptions box */
+  .assumptions {
+    background: var(--bg-2);
+    border-left: 3px solid var(--ink);
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .assum-item label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .assum-item span {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Section title */
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 14px;
+    margin-top: 36px;
+  }
+
+  /* Big comparison */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 36px;
+  }
+
+  .scheme-card {
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .scheme-card.leasing .card-header { background: var(--purple); }
+  .scheme-card.kad .card-header { background: var(--teal); }
+
+  .card-header {
+    padding: 14px 20px;
+    color: #fff;
+  }
+  .card-header h3 { font-size: 15px; font-weight: 600; }
+  .card-header p { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+
+  .card-body { padding: 0; }
+
+  table.fin {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.fin tr td {
+    padding: 9px 20px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  table.fin tr:last-child td { border-bottom: none; }
+  table.fin .label { color: var(--ink-2); }
+  table.fin .value {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  table.fin .section-row td {
+    background: var(--bg-2);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding: 7px 20px;
+  }
+  table.fin .highlight-row td { background: var(--purple-light); }
+  table.fin .highlight-row.kad td { background: var(--teal-light); }
+  table.fin .highlight-row td.label { font-weight: 500; color: var(--purple); }
+  table.fin .highlight-row.kad td.label { color: var(--teal); }
+  table.fin .highlight-row td.value { color: var(--purple); font-weight: 500; }
+  table.fin .highlight-row.kad td.value { color: var(--teal); }
+  table.fin .deduct td.value { color: var(--red); }
+  table.fin .total-row td {
+    background: var(--ink);
+    color: #fff;
+    font-weight: 600;
+    padding: 12px 20px;
+  }
+  table.fin .total-row td.value {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: #fff;
+  }
+  table.fin .warn td { background: var(--red-light); }
+  table.fin .warn td.label { color: var(--red); font-weight: 500; font-size: 12px; }
+  table.fin .warn td.value { color: var(--red); }
+
+  /* Big numbers */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-bottom: 36px;
+  }
+  .kpi-cell {
+    background: var(--bg);
+    padding: 20px 24px;
+  }
+  .kpi-cell label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .kpi-cell .kpi-main {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+  .kpi-cell .kpi-sub {
+    font-size: 11px;
+    color: var(--ink-3);
+    margin-top: 4px;
+  }
+  .kpi-cell.purple .kpi-main { color: var(--purple); }
+  .kpi-cell.teal .kpi-main { color: var(--teal); }
+  .kpi-cell.amber .kpi-main { color: var(--amber); }
+  .kpi-cell.red .kpi-main { color: var(--red); }
+  .kpi-cell.green .kpi-main { color: var(--green); }
+
+  /* Verdict table */
+  .verdict-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 36px;
+  }
+  .verdict-table th {
+    padding: 10px 16px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: left;
+    border-bottom: 2px solid var(--ink);
+  }
+  .verdict-table th:not(:first-child) { text-align: center; }
+  .verdict-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .verdict-table td:not(:first-child) { text-align: center; }
+  .verdict-table .cat { color: var(--ink-3); font-size: 11px; }
+  .pill {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 2px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .pill.win { background: var(--green-light); color: var(--green); }
+  .pill.lose { background: var(--red-light); color: var(--red); }
+  .pill.mid { background: var(--amber-light); color: var(--amber); }
+  .pill.neutral { background: var(--bg-2); color: var(--ink-3); }
+
+  /* Recom */
+  .recom {
+    background: var(--ink);
+    color: #fff;
+    padding: 24px 28px;
+    margin-bottom: 36px;
+  }
+  .recom h4 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-bottom: 10px;
+  }
+  .recom p { font-size: 14px; line-height: 1.7; opacity: 0.9; }
+  .recom strong { opacity: 1; color: #fff; }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+
+  /* Flow diagram */
+  .flow-wrap { margin-bottom: 36px; }
+  .flow-row { display: flex; justify-content: center; gap: 20px; margin-bottom: 0; }
+  .flow-row.two-col { align-items: stretch; }
+  .flow-arrow-center {
+    text-align: center;
+    font-size: 20px;
+    color: var(--ink-3);
+    line-height: 1;
+    padding: 6px 0;
+  }
+  .flow-arrow-center.small { font-size: 16px; padding: 4px 0; flex: 1; }
+  .flow-node {
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 16px 20px;
+    background: var(--bg);
+  }
+  .flow-node.node-center { width: 100%; max-width: 480px; text-align: center; }
+  .flow-node.node-split { width: 100%; max-width: 480px; text-align: center; }
+  .flow-node.node-a { flex: 1; border-top: 3px solid var(--purple); }
+  .flow-node.node-b { flex: 1; border-top: 3px solid var(--teal); }
+  .flow-node.node-ops { width: 100%; background: var(--bg-2); }
+  .flow-node.node-result-a { flex: 1; background: var(--purple-light); border: 1px solid #c4bbf0; }
+  .flow-node.node-result-b { flex: 1; background: var(--teal-light); border: 1px solid #8dd5bc; }
+
+  .fn-tag {
+    font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px;
+  }
+  .fn-tag-a { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--purple); margin-bottom: 6px; }
+  .fn-tag-b { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--teal); margin-bottom: 6px; }
+  .fn-main { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .fn-sub { font-size: 12px; color: var(--ink-3); line-height: 1.5; }
+  .fn-stat { margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .stat-badge {
+    display: inline-block; padding: 5px 14px; border-radius: 2px;
+    font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
+  }
+  .stat-badge.purple { background: var(--purple-light); color: var(--purple); }
+  .stat-badge.teal { background: var(--teal-light); color: var(--teal); }
+  .stat-num { font-size: 12px; color: var(--ink-3); }
+  .warn-text { font-size: 12px; color: var(--red); font-weight: 500; }
+
+  .split-items {
+    display: flex; justify-content: center; gap: 24px; margin-top: 8px;
+    font-size: 13px; color: var(--ink-2); flex-wrap: wrap;
+  }
+  .split-items strong { color: var(--ink); }
+
+  /* Fork visual */
+  .flow-fork { position: relative; display: flex; flex-direction: column; align-items: center; padding: 6px 0; }
+  .fork-line { width: 2px; height: 12px; background: var(--line); }
+  .fork-arms { display: flex; width: 60%; justify-content: space-between; }
+  .fork-arm { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .fork-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; padding: 3px 14px; border-radius: 2px; }
+  .fork-label.purple { background: var(--purple); color: #fff; }
+  .fork-label.teal { background: var(--teal); color: #fff; }
+  .fork-arrow { font-size: 16px; color: var(--ink-3); }
+
+  /* Ops grid */
+  .ops-grid {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; flex-wrap: wrap; justify-content: center;
+  }
+  .ops-item { text-align: center; }
+  .ops-label { display: block; font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+  .ops-val { display: block; font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--ink); }
+  .ops-sep { font-size: 16px; color: var(--ink-3); padding: 0 4px; }
+
+  /* Result */
+  .result-big { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; margin: 8px 0; }
+  .result-big.purple { color: var(--purple); }
+  .result-big.teal { color: var(--teal); }
+  .result-split { font-size: 12px; color: var(--ink-2); line-height: 1.8; }
+  .result-split strong { color: var(--ink); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .dot.purple { background: var(--purple); }
+  .dot.teal { background: var(--teal); }
+  .dot.gray { background: var(--ink-3); }
+
+  @media print {
+    body { font-size: 12px; }
+    .page { padding: 24px; }
+    .compare-grid { page-break-inside: avoid; }
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 20px 16px; }
+
+    .header-top { flex-direction: column; gap: 4px; }
+    .title { font-size: 20px; }
+    .subtitle { font-size: 12px; }
+
+    .flow-row.two-col { flex-direction: column; gap: 0; }
+    .flow-row.two-col .flow-arrow-center { padding: 4px 0; }
+    .flow-node.node-a, .flow-node.node-b { border-top-width: 3px; }
+
+    .fork-arms { width: 90%; }
+
+    .result-big { font-size: 20px !important; }
+
+    .compare-grid { grid-template-columns: 1fr; }
+    .scheme-card { margin-bottom: 16px; }
+
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+
+    .three { grid-template-columns: 1fr; }
+
+    .verdict-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; font-size: 12px; }
+    .verdict-table th, .verdict-table td { padding: 8px 10px; white-space: nowrap; }
+    .verdict-table th:first-child, .verdict-table td:first-child { white-space: normal; min-width: 120px; }
+
+    .section-title { margin-top: 24px; }
+
+    .recom { padding: 16px; }
+    .recom p { font-size: 13px; }
+
+    table.fin { font-size: 12px; }
+    table.fin tr td { padding: 8px 14px; }
+
+    .fn-main { font-size: 13px !important; }
+    .split-items { flex-direction: column; gap: 6px; align-items: center; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <span class="doc-type">Internal Brief — Confidential</span>
+      <span class="doc-date">April 2026</span>
+    </div>
+    <div class="title">Analisis Perbandingan Skema Pembiayaan<br>Fleet Operasional Mitra Ride-Hailing</div>
+    <div class="subtitle">Skema Leasing Konvensional vs. Kredit Atas Deposito (KAD) — Basis 25 Unit / Rp 500 Juta Pool Dana</div>
+  </div>
+
+  <!-- Flow diagram -->
+  <div class="flow-wrap">
+    <!-- Row 1: Dana tersedia -->
+    <div class="flow-row">
+      <div class="flow-node node-split" style="border:2px solid var(--ink);text-align:center;">
+        <div class="fn-tag">Dana tersedia untuk beli mobil</div>
+        <div class="fn-main" style="font-size:22px;letter-spacing:-0.5px;">Rp 500.000.000</div>
+        <div class="fn-sub">25 klien × Rp 20jt (setelah marketing + notaris)</div>
+      </div>
+    </div>
+    <!-- Arrow fork -->
+    <div class="flow-fork">
+      <div class="fork-line"></div>
+      <div class="fork-arms">
+        <div class="fork-arm left">
+          <div class="fork-label purple">Skema Berjalan</div>
+          <div class="fork-arrow">↓</div>
+        </div>
+        <div class="fork-arm right">
+          <div class="fork-label teal">Skema Kredit</div>
+          <div class="fork-arrow">↓</div>
+        </div>
+      </div>
+    </div>
+    <!-- Row 3: Two paths -->
+    <div class="flow-row two-col">
+      <div class="flow-node node-a">
+        <div class="fn-tag-a">Leasing Konvensional</div>
+        <div class="fn-main">Rp 20jt → DP per klien</div>
+        <div class="fn-sub">Analisis kredit individual · STNK atas nama klien</div>
+        <div class="fn-stat">
+          <span class="stat-badge purple">25 unit aktif</span>
+          <span class="stat-num">Angsuran Rp 3,4jt / bln</span>
+        </div>
+      </div>
+      <div class="flow-node node-b">
+        <div class="fn-tag-b">Kredit Atas Deposito (KAD)</div>
+        <div class="fn-main">Rp 500jt → Deposito → Kredit 500jt</div>
+        <div class="fn-sub">Analisis 1× · STNK atas nama perusahaan · Biaya 1% back-to-back + 1% spread deposito</div>
+        <div class="fn-stat">
+          <span class="stat-badge teal">3 unit aktif</span>
+          <span class="stat-num warn-text">22 klien terabaikan dan jadi risiko</span>
+          <span class="stat-num" style="display:block;margin-top:6px;">Biaya KAD (1% B2B + 1% spread): Rp 833.333 / bln &nbsp;·&nbsp; Rp 5.000.000 / 6 bln</span>
+        </div>
+      </div>
+    </div>
+    <!-- Arrow down both -->
+    <div class="flow-row two-col" style="margin-top:0">
+      <div class="flow-arrow-center small">↓</div>
+      <div class="flow-arrow-center small">↓</div>
+    </div>
+    <!-- Row 4: Monthly net per scheme -->
+    <div class="flow-row two-col">
+      <div class="flow-node node-a" style="text-align:center;">
+        <div class="fn-tag-a">Profit per bulan — Skema Berjalan</div>
+        <div class="result-big purple" style="font-size:26px;margin:10px 0;">Rp 25.000.000</div>
+        <div class="fn-sub">25 unit × Rp 1.000.000 / unit</div>
+        <div class="fn-sub" style="margin-top:6px;">Rp 5,4jt − angsuran Rp 3,4jt − manajemen Rp 1jt</div>
+      </div>
+      <div class="flow-node node-b" style="text-align:center;">
+        <div class="fn-tag-b">Profit per bulan — Skema Kredit</div>
+        <div class="result-big teal" style="font-size:26px;margin:10px 0;">Rp 12.366.666</div>
+        <div class="fn-sub">3 unit × Rp 4.122.222 / unit</div>
+        <div class="fn-sub" style="margin-top:6px;">Rp 5,4jt − biaya KAD Rp 0,28jt − manajemen Rp 1jt</div>
+      </div>
+    </div>
+    <div class="flow-arrow-center">↓ akumulasi 6 bulan</div>
+    <!-- Row 5: Profit sharing -->
+    <div class="flow-row two-col" style="margin-top:0">
+      <div class="flow-node node-result-a">
+        <div class="fn-tag-a">Profit Bersih — Skema Berjalan</div>
+        <div class="result-big purple">Rp 172.000.000</div>
+        <div class="result-split">
+          <div><span class="dot purple"></span> Perusahaan 60% &nbsp;<strong>Rp 103.200.000</strong></div>
+          <div><span class="dot gray"></span> Klien 40% per orang &nbsp;<strong>Rp 2.752.000</strong></div>
+        </div>
+      </div>
+      <div class="flow-node node-result-b">
+        <div class="fn-tag-b">Profit Bersih — Skema Kredit</div>
+        <div class="result-big teal">Rp 69.700.000</div>
+        <div class="result-split">
+          <div><span class="dot teal"></span> Perusahaan 60% &nbsp;<strong>Rp 61.600.000</strong></div>
+          <div><span class="dot gray"></span> Klien 40% per orang &nbsp;<strong>Rp 2.700.000</strong> <span style="font-size:11px;color:var(--ink-3)">(Rp 450.000 / bln, dibatasi)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Side by side detail -->
+  <div class="section-title">Rincian Finansial Per Skema</div>
+  <div class="compare-grid">
+
+    <!-- Leasing -->
+    <div class="scheme-card leasing">
+      <div class="card-header">
+        <h3>Skema Berjalan — Leasing Konvensional</h3>
+        <p>25 unit beroperasi penuh</p>
+      </div>
+      <div class="card-body">
+        <table class="fin">
+          <tr class="section-row"><td colspan="2">Ekonomi per unit / bulan</td></tr>
+          <tr><td class="label">Setoran driver</td><td class="value">+ Rp 5.400.000</td></tr>
+          <tr class="deduct"><td class="label">Angsuran leasing</td><td class="value">− Rp 3.400.000</td></tr>
+          <tr class="deduct"><td class="label">Biaya manajemen</td><td class="value">− Rp 1.000.000</td></tr>
+          <tr class="highlight-row"><td class="label">Retained earnings / bulan</td><td class="value">Rp 1.000.000</td></tr>
+
+          <tr class="section-row"><td colspan="2">Upfront profit (saat akuisisi klien)</td></tr>
+          <tr><td class="label">DP dari klien (pool)</td><td class="value">Rp 20.000.000</td></tr>
+          <tr class="deduct"><td class="label">DP aktual + GPS</td><td class="value">− Rp 17.620.000</td></tr>
+          <tr class="highlight-row"><td class="label">Selisih per unit</td><td class="value">Rp 2.380.000</td></tr>
+
+          <tr class="section-row"><td colspan="2">Proyeksi 25 unit × 6 bulan</td></tr>
+          <tr><td class="label">Retained earnings 6 bln</td><td class="value">Rp 150.000.000</td></tr>
+          <tr><td class="label">Est. biaya ops mobil*</td><td class="value">− Rp 37.500.000</td></tr>
+          <tr class="highlight-row"><td class="label">Profit bersih (sebelum sharing)</td><td class="value">Rp 172.000.000</td></tr>
+          <tr><td class="label">Perusahaan 60%</td><td class="value">Rp 103.200.000</td></tr>
+          <tr class="total-row"><td class="label">Klien 40% (per klien)</td><td class="value">Rp 2.752.000</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- KAD -->
+    <div class="scheme-card kad">
+      <div class="card-header">
+        <h3>Skema Kredit — Kredit Atas Deposito (KAD)</h3>
+        <p>3 unit aktif, 22 unit tertunda</p>
+      </div>
+      <div class="card-body">
+        <table class="fin">
+          <tr class="section-row"><td colspan="2">Ekonomi per unit / bulan</td></tr>
+          <tr><td class="label">Setoran driver</td><td class="value">+ Rp 5.400.000</td></tr>
+          <tr class="deduct"><td class="label">Biaya KAD per unit (1% B2B + 1% spread)</td><td class="value">− Rp 277.778</td></tr>
+          <tr class="deduct"><td class="label">Biaya manajemen</td><td class="value">− Rp 1.000.000</td></tr>
+          <tr class="highlight-row kad"><td class="label">Retained earnings / bulan</td><td class="value">Rp 4.122.222</td></tr>
+
+          <tr class="section-row"><td colspan="2">Struktur modal KAD</td></tr>
+          <tr><td class="label">Deposito dikunci (dari pool 25 klien)</td><td class="value">Rp 500.000.000</td></tr>
+          <tr><td class="label">Kredit KAD diperoleh</td><td class="value">Rp 500.000.000</td></tr>
+          <tr><td class="label">Dana dipakai beli mobil (3 unit)</td><td class="value">Rp 477.360.000</td></tr>
+          <tr><td class="label">Sisa kredit (tidak terpakai)</td><td class="value">Rp 22.640.000</td></tr>
+          <tr class="warn"><td class="label">⚠ Dana 22 klien ikut terkunci sebagai jaminan</td><td class="value">Rp 440.000.000</td></tr>
+
+          <tr class="section-row"><td colspan="2">Proyeksi 3 unit × 6 bulan</td></tr>
+          <tr><td class="label">Retained earnings 6 bln</td><td class="value">Rp 74.200.000</td></tr>
+          <tr><td class="label">Total biaya KAD 6 bln (1% B2B + 1% spread)</td><td class="value">− Rp 5.000.000</td></tr>
+          <tr><td class="label">Est. biaya ops mobil*</td><td class="value">− Rp 4.500.000</td></tr>
+          <tr class="highlight-row kad"><td class="label">Profit bersih (sebelum sharing)</td><td class="value">Rp 64.700.000</td></tr>
+          <tr><td class="label">Perusahaan 60%</td><td class="value">Rp 61.600.000</td></tr>
+          <tr class="total-row"><td class="label">Klien 40% (per klien aktif)</td><td class="value">Rp 2.700.000</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Comparison verdict -->
+  <div class="section-title">Perbandingan Dimensi Keputusan</div>
+  <table class="verdict-table">
+    <thead>
+      <tr>
+        <th style="width:30%">Dimensi</th>
+        <th style="width:35%">Skema Berjalan — Leasing</th>
+        <th style="width:35%">Skema Kredit — KAD</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Unit beroperasi</strong><br><span class="cat">Dari pool 500jt</span></td>
+        <td><span class="pill win">25 unit</span></td>
+        <td><span class="pill lose">3 unit</span></td>
+      </tr>
+      <tr>
+        <td><strong>Profit perusahaan / 6 bln</strong><br><span class="cat">Termasuk upfront</span></td>
+        <td><span class="pill win">Rp 103.200.000</span></td>
+        <td><span class="pill lose">Rp 61.600.000</span></td>
+      </tr>
+      <tr>
+        <td><strong>Profit per unit / 6 bln</strong><br><span class="cat">Margin per mobil</span></td>
+        <td><span class="pill lose">Rp 4.128.000</span></td>
+        <td><span class="pill win">Rp 13.940.000</span></td>
+      </tr>
+      <tr>
+        <td><strong>Return ke klien</strong><br><span class="cat">Per klien aktif</span></td>
+        <td><span class="pill mid">Rp 2.752.000</span></td>
+        <td><span class="pill win">Rp 2.700.000</span></td>
+      </tr>
+      <tr>
+        <td><strong>Biaya bunga efektif</strong><br><span class="cat">Cost of fund p.a.</span></td>
+        <td><span class="pill lose">~17% (leasing)</span></td>
+        <td><span class="pill win">2% (KAD)</span></td>
+      </tr>
+      <tr>
+        <td><strong>STNK / kepemilikan</strong></td>
+        <td><span class="pill lose">Atas nama klien</span></td>
+        <td><span class="pill win">Atas nama perusahaan</span></td>
+      </tr>
+      <tr>
+        <td><strong>Kecepatan proses</strong></td>
+        <td><span class="pill lose">Lambat (analisis per klien)</span></td>
+        <td><span class="pill win">Cepat (1× analisis)</span></td>
+      </tr>
+      <tr>
+        <td><strong>Risiko operasional</strong><br><span class="cat">Klien tidak terlayani</span></td>
+        <td><span class="pill win">Semua terlayani</span></td>
+        <td><span class="pill lose">22 klien terabaikan dan jadi risiko</span></td>
+      </tr>
+      <tr>
+        <td><strong>Pelunasan pokok kredit</strong><br><span class="cat">Mekanisme repayment</span></td>
+        <td><span class="pill neutral">Via angsuran bulanan</span></td>
+        <td><span class="pill mid">Bullet — deposit nets kredit di akhir tenor</span></td>
+      </tr>
+      <tr>
+        <td><strong>Nasib dana 22 klien</strong><br><span class="cat">Saat deposit jatuh tempo</span></td>
+        <td><span class="pill win">DP langsung ke mobil masing-masing</span></td>
+        <td><span class="pill lose">Ikut dikunci, dipakai jaminan kredit 3 unit lain</span></td>
+      </tr>
+      <tr>
+        <td><strong>Risiko reputasi</strong></td>
+        <td><span class="pill neutral">Rendah</span></td>
+        <td><span class="pill lose">Tinggi — dana terkunci, tidak transparan</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Recommendation -->
+  <div class="recom">
+    <h4>Rekomendasi</h4>
+    <p>
+      Skema KAD secara teknis melunasi pokok via mekanisme bullet — deposit 500jt dari 25 klien di-nets terhadap kredit 
+      saat jatuh tempo, sehingga 3 mobil menjadi milik penuh perusahaan. Namun <strong>22 klien lainnya menanggung risiko 
+      tanpa manfaat</strong>: uang DP mereka ikut dikunci sebagai jaminan kredit yang tidak membeli mobil untuk mereka.
+      Ini adalah risiko hukum dan reputasi yang signifikan. <strong>Rekomendasi: pertahankan skema leasing sebagai 
+      backbone operasional</strong> — leverage 1 klien = 1 mobil tetap lebih unggul secara total portfolio. KAD hanya 
+      layak dipertimbangkan sebagai <em>bridging facility</em> jangka pendek dengan dana perusahaan sendiri, 
+      bukan dana klien.
+    </p>
+  </div>
+
+  <!-- Footer note -->
+  <p style="font-size:11px;color:#6b6b6b;margin-bottom:24px;">
+    * Estimasi biaya operasional mobil: Rp 250.000/unit/bulan (service ringan, administrasi). Angka aktual bergantung kondisi armada. <br>
+    Seluruh angka dalam dokumen ini bersifat proyeksi dan dapat berubah sesuai kondisi pasar, kinerja driver, dan negosiasi dealer.
+  </p>
+
+  <div class="footer">
+    <span>Dokumen Internal — Tidak untuk distribusi eksternal</span>
+    <span>Disiapkan April 2026</span>
+  </div>
+
+</div>
+</body>
+</html>
